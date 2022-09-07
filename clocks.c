@@ -94,6 +94,8 @@ void custom_clocks_init()
   // And disable unused clock regions
   clocks_hw->wake_en1 = 0x703e;
   clocks_hw->wake_en0 = 0x10ef0f7f;
+  clocks_hw->sleep_en1 = 0x703e;
+  clocks_hw->sleep_en0 = 0x10ef0f7f;
 #endif
 #endif
 }

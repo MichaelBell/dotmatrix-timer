@@ -43,6 +43,7 @@ target_link_libraries(${NAME}
     pimoroni_i2c
     breakout_dotmatrix
     hardware_pwm
+    hardware_dma
 )
 
 # create map/bin/hex file etc.
