@@ -14,7 +14,7 @@ void custom_clocks_init()
     // avoid tripping it due to small fluctuations.
 #if 1
     hw_write_masked(&vreg_and_chip_reset_hw->bod, 0b1000 << VREG_AND_CHIP_RESET_BOD_VSEL_LSB, VREG_AND_CHIP_RESET_BOD_VSEL_BITS);
-    vreg_set_voltage(VREG_VOLTAGE_0_95);
+    vreg_set_voltage(VREG_VOLTAGE_1_00);
 #else
     // This version reduces voltage to 0.80V
     // This works for me but is quite a long way below spec!
@@ -27,7 +27,7 @@ void custom_clocks_init()
 #endif
 
     // Start tick in watchdog
-    watchdog_start_tick(XOSC_MHZ * 4);
+    watchdog_start_tick(XOSC_MHZ);
 
     // Disable resus that may be enabled from previous software
     clocks_hw->resus.ctrl = 0;
@@ -53,21 +53,19 @@ void custom_clocks_init()
       CLOCKS_CLK_SYS_CTRL_SRC_VALUE_CLKSRC_CLK_SYS_AUX,
       CLOCKS_CLK_SYS_CTRL_AUXSRC_VALUE_XOSC_CLKSRC,
       XOSC_MHZ * MHZ,
-      (XOSC_MHZ * MHZ) / 24);
+      (XOSC_MHZ * MHZ)); // / 48);
 
   clock_configure(clk_peri,
       0,
       CLOCKS_CLK_PERI_CTRL_AUXSRC_VALUE_XOSC_CLKSRC,
       XOSC_MHZ * MHZ,
-      (XOSC_MHZ * MHZ) / 12);
+      (XOSC_MHZ * MHZ)); // / 24);
 
-#if 0
   clock_configure(clk_adc,
       0,
       CLOCKS_CLK_ADC_CTRL_AUXSRC_VALUE_XOSC_CLKSRC,
       XOSC_MHZ * MHZ,
       XOSC_MHZ * MHZ);
-#endif
 
   clock_configure(clk_rtc,
       0,
@@ -89,11 +87,11 @@ void custom_clocks_init()
   clocks_hw->wake_en0 = 0x73ef0f3f;
 #else
   // Shutdown unused memory banks
-  syscfg_hw->mempowerdown = 0x5e;
+  syscfg_hw->mempowerdown = 0x5c;
 
   // And disable unused clock regions
   clocks_hw->wake_en1 = 0x703e;
-  clocks_hw->wake_en0 = 0x10ef0f7f;
+  clocks_hw->wake_en0 = 0x33ef0f7f;
 #endif
 #endif
 }

@@ -112,11 +112,9 @@ void runtime_init(void) {
     // Peripheral clocks should now all be running
     unreset_block_wait(RESETS_RESET_BITS & ~(
           RESETS_RESET_SPI1_BITS |
-          RESETS_RESET_SPI0_BITS |
           RESETS_RESET_UART0_BITS |
           RESETS_RESET_UART1_BITS |
-          RESETS_RESET_USBCTRL_BITS |
-          RESETS_RESET_ADC_BITS
+          RESETS_RESET_USBCTRL_BITS
     ));
 
 #if !PICO_IE_26_29_UNCHANGED_ON_RESET
