@@ -34,10 +34,7 @@ pico_enable_stdio_usb(${NAME} 0)
 
 # Include required libraries
 # This assumes `pimoroni-pico` is stored alongside your project
-include(common/pimoroni_i2c)
 include(common/pimoroni_bus)
-include(drivers/ltp305/ltp305)
-include(libraries/breakout_dotmatrix/breakout_dotmatrix)
 include(drivers/st7789/st7789)
 include(libraries/pico_graphics/pico_graphics)
 include(libraries/bitmap_fonts/bitmap_fonts)
@@ -45,8 +42,6 @@ include(libraries/hershey_fonts/hershey_fonts)
 
 # Don't forget to link the libraries you need!
 target_link_libraries(${NAME}
-    pimoroni_i2c
-    breakout_dotmatrix
     st7789
     pico_graphics
     hardware_pwm

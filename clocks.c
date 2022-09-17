@@ -7,14 +7,20 @@
 #include "hardware/structs/rosc.h"
 #include "hardware/structs/syscfg.h"
 #include "hardware/structs/xip_ctrl.h"
+#include "hardware/gpio.h"
 
 void custom_clocks_init()
 {
+    // Set pin 4 low to avoid backlight coming on on startup
+    gpio_set_function(4, GPIO_FUNC_SIO);
+    gpio_set_dir(4, GPIO_OUT);
+    gpio_put(4, false);
+
     // Reduce voltage to 0.95 and reduce brownout detection voltage to 
     // avoid tripping it due to small fluctuations.
 #if 1
     hw_write_masked(&vreg_and_chip_reset_hw->bod, 0b1000 << VREG_AND_CHIP_RESET_BOD_VSEL_LSB, VREG_AND_CHIP_RESET_BOD_VSEL_BITS);
-    vreg_set_voltage(VREG_VOLTAGE_1_00);
+    vreg_set_voltage(VREG_VOLTAGE_0_95);
 #else
     // This version reduces voltage to 0.80V
     // This works for me but is quite a long way below spec!
@@ -53,19 +59,19 @@ void custom_clocks_init()
       CLOCKS_CLK_SYS_CTRL_SRC_VALUE_CLKSRC_CLK_SYS_AUX,
       CLOCKS_CLK_SYS_CTRL_AUXSRC_VALUE_XOSC_CLKSRC,
       XOSC_MHZ * MHZ,
-      (XOSC_MHZ * MHZ)); // / 48);
+      (XOSC_MHZ * MHZ) / 2);
 
   clock_configure(clk_peri,
       0,
       CLOCKS_CLK_PERI_CTRL_AUXSRC_VALUE_XOSC_CLKSRC,
       XOSC_MHZ * MHZ,
-      (XOSC_MHZ * MHZ)); // / 24);
+      (XOSC_MHZ * MHZ) / 2);
 
   clock_configure(clk_adc,
       0,
       CLOCKS_CLK_ADC_CTRL_AUXSRC_VALUE_XOSC_CLKSRC,
       XOSC_MHZ * MHZ,
-      XOSC_MHZ * MHZ);
+      (XOSC_MHZ * MHZ) / 2);
 
   clock_configure(clk_rtc,
       0,
@@ -87,11 +93,13 @@ void custom_clocks_init()
   clocks_hw->wake_en0 = 0x73ef0f3f;
 #else
   // Shutdown unused memory banks
-  syscfg_hw->mempowerdown = 0x5c;
+  syscfg_hw->mempowerdown = 0x5e;
 
   // And disable unused clock regions
   clocks_hw->wake_en1 = 0x703e;
-  clocks_hw->wake_en0 = 0x33ef0f7f;
+  clocks_hw->wake_en0 = 0x13ef0f3f;
+  clocks_hw->sleep_en1 = 0x5030;
+  clocks_hw->sleep_en0 = 0x00e20f01;
 #endif
 #endif
 }
